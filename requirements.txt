@@ -1,7 +1,11 @@
+django==4.2.11
+gunicorn==21.2.0
+whitenoise==6.12.0
+scikit-learn==1.8.0
+joblib==1.5.3
+numpy==2.4.6
 pandas
 matplotlib
 seaborn
-scikit-learn
-joblib
 streamlit
 

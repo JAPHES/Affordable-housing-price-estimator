@@ -1,0 +1,67 @@
+{% extends "predictor/base.html" %}
+
+{% block title %}Predict House Price | Affordable Housing Estimator{% endblock %}
+{% block body_class %}predict-page{% endblock %}
+
+{% block content %}
+<main class="page-shell">
+    <section class="page-intro">
+        <div>
+            <p class="eyebrow">Prediction Workspace</p>
+            <h1>Estimate House Price</h1>
+        </div>
+        <div class="model-pill">
+            <span>{{ feature_count }}</span>
+            <small>model inputs</small>
+        </div>
+    </section>
+
+    <section class="workspace">
+        <form class="estimator-form" method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="error-banner">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            {% for group_name, controls in form.grouped_fields %}
+                <fieldset class="input-group">
+                    <legend>{{ group_name }}</legend>
+                    <div class="control-grid">
+                        {% for control in controls %}
+                            <label class="control-card" for="{{ control.field.id_for_label }}">
+                                <span class="control-label">{{ control.field.label }}</span>
+                                <span class="input-wrap">
+                                    {% if control.prefix %}<span>{{ control.prefix }}</span>{% endif %}
+                                    {{ control.field }}
+                                    {% if control.suffix %}<span>{{ control.suffix }}</span>{% endif %}
+                                </span>
+                                {% for error in control.field.errors %}
+                                    <span class="field-error">{{ error }}</span>
+                                {% endfor %}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </fieldset>
+            {% endfor %}
+
+            <button class="submit-button" type="submit">
+                Estimate Price
+            </button>
+        </form>
+
+        <aside class="result-panel">
+            <p class="panel-label">Estimated House Price</p>
+            {% if result %}
+                <strong>{{ result.formatted }}</strong>
+                <div class="result-line"></div>
+                <p class="result-note">Generated from the existing linear regression model.</p>
+            {% else %}
+                <strong class="muted">KES --</strong>
+                <div class="result-line"></div>
+                <p class="result-note">Enter the housing values and submit the form.</p>
+            {% endif %}
+        </aside>
+    </section>
+</main>
+{% endblock %}

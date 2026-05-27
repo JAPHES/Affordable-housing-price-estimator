@@ -1,0 +1,65 @@
+{% extends "predictor/base.html" %}
+{% load static %}
+
+{% block title %}Affordable Housing Price Estimator | Kenya{% endblock %}
+{% block body_class %}landing-page{% endblock %}
+
+{% block content %}
+<main>
+    <section class="landing-hero" style="--hero-image: url('{% static 'predictor/hero-housing.png' %}');">
+        <div class="hero-copy">
+            <p class="eyebrow">Kenya Affordable Housing</p>
+            <h1>Affordable Housing Price Estimator</h1>
+            <p class="hero-text">
+                Estimate house prices from construction, financing, repayment, and buyer-income details using the current trained model.
+            </p>
+            <div class="hero-actions">
+                <a class="primary-action" href="{% url 'predictor:predict' %}">Start Prediction</a>
+                <a class="secondary-action" href="#project-overview">View Project</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-band" id="project-overview">
+        <div class="section-heading">
+            <p class="eyebrow">Project Overview</p>
+            <h2>Designed to make model predictions easier to use.</h2>
+        </div>
+        <div class="feature-grid">
+            <article class="info-card">
+                <span>01</span>
+                <h3>Kenya-focused data</h3>
+                <p>The estimator is based on an affordable housing dataset with Kenyan pricing and financing fields.</p>
+            </article>
+            <article class="info-card">
+                <span>02</span>
+                <h3>Existing model preserved</h3>
+                <p>The Django app loads the saved model exactly as it is and sends inputs in the trained feature order.</p>
+            </article>
+            <article class="info-card">
+                <span>03</span>
+                <h3>Clear input groups</h3>
+                <p>Prediction inputs are organized into project costs, property details, financing, and buyer profile sections.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="content-band split-band">
+        <div>
+            <p class="eyebrow">Model Inputs</p>
+            <h2>The predictor uses nine financial and property variables.</h2>
+        </div>
+        <div class="input-list">
+            <span>Financing cost</span>
+            <span>Construction cost</span>
+            <span>Markup</span>
+            <span>Monthly repayment</span>
+            <span>House size</span>
+            <span>Cost per sqm</span>
+            <span>Interest rate</span>
+            <span>Housing levy</span>
+            <span>Buyer income</span>
+        </div>
+    </section>
+</main>
+{% endblock %}

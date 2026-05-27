@@ -1,0 +1,34 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Affordable Housing Price Estimator{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'predictor/styles.css' %}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+    <header class="site-header">
+        <nav class="site-nav" aria-label="Main navigation">
+            <a class="brand" href="{% url 'predictor:landing' %}">
+                <span class="brand-mark">AH</span>
+                <span>Affordable Housing Estimator</span>
+            </a>
+            <div class="nav-actions">
+                <a class="nav-link {% if active_page == 'home' %}active{% endif %}" href="{% url 'predictor:landing' %}">Home</a>
+                <a class="nav-button {% if active_page == 'predict' %}active{% endif %}" href="{% url 'predictor:predict' %}">Predict Price</a>
+            </div>
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer class="site-footer">
+        <div>
+            <strong>Affordable Housing Price Estimator</strong>
+            <p>Built for Kenya-focused housing price exploration using the existing trained regression model.</p>
+        </div>
+        <a href="{% url 'predictor:predict' %}">Open predictor</a>
+    </footer>
+</body>
+</html>
