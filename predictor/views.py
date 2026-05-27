@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 
 from .forms import PricePredictionForm
@@ -6,6 +7,10 @@ from .services import get_feature_names, predict_price
 
 def format_kes(value):
     return f"KES {value:,.0f}"
+
+
+def health(request):
+    return JsonResponse({"status": "ok"})
 
 
 def landing(request):

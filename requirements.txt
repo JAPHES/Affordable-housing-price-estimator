@@ -4,8 +4,6 @@ whitenoise==6.12.0
 scikit-learn==1.8.0
 joblib==1.5.3
 numpy==2.4.6
-pandas
-matplotlib
-seaborn
-streamlit
+threadpoolctl==3.6.0
+scipy==1.17.1
 

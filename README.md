@@ -8,6 +8,12 @@ Django web app for the existing `affordable_price_model.pkl` housing price model
 python manage.py runserver 127.0.0.1:8001
 ```
 
+For notebook or Streamlit work, install the optional development dependencies:
+
+```powershell
+python -m pip install -r requirements-dev.txt
+```
+
 Landing page:
 
 ```text
