@@ -2,6 +2,12 @@
 
 Django web app for the existing `affordable_price_model.pkl` housing price model.
 
+## Live App
+
+```text
+https://housingpriceestimator-production.up.railway.app/
+```
+
 ## Local Run
 
 ```powershell
@@ -33,7 +39,14 @@ This project includes `railway.json`, so Railway will:
 - build with Railpack
 - run `python manage.py collectstatic --noinput`
 - start the app with Gunicorn on Railway's `$PORT`
-- healthcheck `/`
+- healthcheck `/health/`
+
+Public networking:
+
+- Use HTTP public networking.
+- Generate a Railway service domain.
+- Leave the target port on auto-detect when possible.
+- If Railway requires a target port, set `PORT=8000` in service variables and use target port `8000`.
 
 Required Railway variables:
 
