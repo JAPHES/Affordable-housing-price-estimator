@@ -555,6 +555,12 @@ h3 {
     font-weight: 650;
 }
 
+.control-input::placeholder {
+    color: #8a958e;
+    font-weight: 500;
+    opacity: 1;
+}
+
 .field-support {
     display: grid;
     gap: 2px;
