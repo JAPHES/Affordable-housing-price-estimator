@@ -9,12 +9,22 @@ GROUP_CONFIG = {
 }
 
 
+def example_placeholder(value):
+    if value is None:
+        return ""
+    if isinstance(value, float) and not value.is_integer():
+        formatted_value = f"{value:g}"
+    else:
+        formatted_value = f"{value:,.0f}"
+    return f"e.g. {formatted_value}"
+
+
 FIELD_CONFIG = {
     "financing_cost_ksh": {
         "label": "Financing cost",
         "min": 118400,
         "max": 1647900,
-        "initial": 440100,
+        "example": 440100,
         "step": 1000,
         "prefix": "KES",
         "group": "Project Costs",
@@ -25,7 +35,7 @@ FIELD_CONFIG = {
         "label": "Construction cost",
         "min": 591800,
         "max": 8239300,
-        "initial": 2200450,
+        "example": 2200450,
         "step": 5000,
         "prefix": "KES",
         "group": "Project Costs",
@@ -36,7 +46,7 @@ FIELD_CONFIG = {
         "label": "Markup",
         "min": 66800,
         "max": 1977400,
-        "initial": 343250,
+        "example": 343250,
         "step": 1000,
         "prefix": "KES",
         "group": "Project Costs",
@@ -47,7 +57,7 @@ FIELD_CONFIG = {
         "label": "House size",
         "min": 17,
         "max": 83,
-        "initial": 52,
+        "example": 52,
         "step": 1,
         "suffix": "sqm",
         "group": "Property",
@@ -58,7 +68,7 @@ FIELD_CONFIG = {
         "label": "Cost per square metre",
         "min": 32022,
         "max": 105759,
-        "initial": 50146,
+        "example": 50146,
         "step": 500,
         "prefix": "KES",
         "group": "Property",
@@ -69,7 +79,7 @@ FIELD_CONFIG = {
         "label": "Monthly repayment",
         "min": 2980,
         "max": 107950,
-        "initial": 17785,
+        "example": 17785,
         "step": 500,
         "prefix": "KES",
         "group": "Financing",
@@ -80,7 +90,7 @@ FIELD_CONFIG = {
         "label": "Interest rate",
         "min": 3,
         "max": 9,
-        "initial": 6,
+        "example": 6,
         "step": 0.1,
         "suffix": "%",
         "group": "Financing",
@@ -91,7 +101,7 @@ FIELD_CONFIG = {
         "label": "Housing levy contribution",
         "min": 150,
         "max": 7440,
-        "initial": 1065,
+        "example": 1065,
         "step": 50,
         "prefix": "KES",
         "group": "Buyer Profile",
@@ -102,7 +112,7 @@ FIELD_CONFIG = {
         "label": "Buyer monthly income",
         "min": 10000,
         "max": 496000,
-        "initial": 71200,
+        "example": 71200,
         "step": 1000,
         "prefix": "KES",
         "group": "Buyer Profile",
@@ -126,6 +136,7 @@ class PricePredictionForm(forms.Form):
                 "class": "control-input",
                 "inputmode": "decimal",
                 "step": step,
+                "placeholder": example_placeholder(config.get("example")),
             }
             if min_value is not None:
                 attrs["min"] = min_value
@@ -136,7 +147,6 @@ class PricePredictionForm(forms.Form):
                 label=config.get("label", name.replace("_", " ").title()),
                 min_value=min_value,
                 max_value=max_value,
-                initial=config.get("initial"),
                 help_text=config.get("help", ""),
                 widget=forms.NumberInput(attrs=attrs),
             )
