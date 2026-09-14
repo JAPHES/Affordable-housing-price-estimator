@@ -167,11 +167,5 @@ class PricePredictionForm(forms.Form):
             if name in groups
         ]
 
-    def grouped_fields(self):
-        return [
-            (section["name"], section["controls"])
-            for section in self.grouped_sections()
-        ]
-
     def feature_values(self):
         return {name: self.cleaned_data[name] for name in self.feature_names}
