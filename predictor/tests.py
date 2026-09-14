@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from django.urls import reverse
 
-from .forms import FIELD_CONFIG
+from .forms import FIELD_CONFIG, example_placeholder
 from .services import get_feature_names
 
 
@@ -28,7 +28,7 @@ class PredictorViewTests(SimpleTestCase):
         self.assertContains(response, "About this estimate")
         self.assertContains(response, "not a formal property valuation")
 
-    def test_prediction_form_provides_defaults_and_guidance(self):
+    def test_prediction_form_uses_empty_fields_with_example_placeholders(self):
         response = self.client.get(reverse("predictor:predict"), secure=True)
         form = response.context["form"]
 
@@ -37,14 +37,20 @@ class PredictorViewTests(SimpleTestCase):
             ["Project Costs", "Property", "Financing", "Buyer Profile"],
         )
         for name in get_feature_names():
-            self.assertEqual(form[name].value(), FIELD_CONFIG[name]["initial"])
+            self.assertIsNone(form[name].value())
+            self.assertNotIn(" value=", str(form[name]))
+            self.assertEqual(
+                form[name].field.widget.attrs["placeholder"],
+                example_placeholder(FIELD_CONFIG[name]["example"]),
+            )
             self.assertEqual(form[name].help_text, FIELD_CONFIG[name]["help"])
 
+        self.assertContains(response, 'placeholder="e.g. 440,100"')
         self.assertContains(response, "Accepted range: KES 118,400–1,647,900")
 
     def test_invalid_prediction_submission_shows_validation_summary(self):
         form_data = {
-            name: FIELD_CONFIG[name]["initial"]
+            name: FIELD_CONFIG[name]["example"]
             for name in get_feature_names()
         }
         form_data["financing_cost_ksh"] = 0
@@ -63,7 +69,7 @@ class PredictorViewTests(SimpleTestCase):
     def test_prediction_submission_returns_a_non_negative_price(self):
         feature_names = get_feature_names()
         form_data = {
-            name: FIELD_CONFIG.get(name, {}).get("initial", 0)
+            name: FIELD_CONFIG.get(name, {}).get("example", 0)
             for name in feature_names
         }
 
