@@ -1,0 +1,9 @@
+# Legacy data-science and Streamlit files are not needed by the Django app.
+app.py
+app.ipynb
+*.csv
+requirements-dev.txt
+
+# Local build and database artifacts.
+db.sqlite3
+staticfiles/

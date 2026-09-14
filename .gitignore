@@ -3,9 +3,12 @@ __pycache__/
 *$py.class
 
 .env
+.env.local
+.env.*.local
 .venv/
 venv/
 env/
+.vercel/
 
 db.sqlite3
 staticfiles/
