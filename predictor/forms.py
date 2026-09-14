@@ -1,6 +1,14 @@
 from django import forms
 
 
+GROUP_CONFIG = {
+    "Project Costs": "Enter the main cost components used to develop or purchase the home.",
+    "Property": "Describe the size of the home and its cost per square metre.",
+    "Financing": "Provide the expected repayment and annual interest rate.",
+    "Buyer Profile": "Add the buyer's monthly income and housing levy contribution.",
+}
+
+
 FIELD_CONFIG = {
     "financing_cost_ksh": {
         "label": "Financing cost",
@@ -10,6 +18,8 @@ FIELD_CONFIG = {
         "step": 1000,
         "prefix": "KES",
         "group": "Project Costs",
+        "help": "Total financing charges associated with the purchase.",
+        "range": "Accepted range: KES 118,400–1,647,900",
     },
     "construction_cost_ksh": {
         "label": "Construction cost",
@@ -19,6 +29,8 @@ FIELD_CONFIG = {
         "step": 5000,
         "prefix": "KES",
         "group": "Project Costs",
+        "help": "Estimated cost of materials, labour, and delivery.",
+        "range": "Accepted range: KES 591,800–8,239,300",
     },
     "markup_ksh": {
         "label": "Markup",
@@ -28,6 +40,8 @@ FIELD_CONFIG = {
         "step": 1000,
         "prefix": "KES",
         "group": "Project Costs",
+        "help": "Developer or seller margin included in the final price.",
+        "range": "Accepted range: KES 66,800–1,977,400",
     },
     "size_sqm": {
         "label": "House size",
@@ -37,6 +51,8 @@ FIELD_CONFIG = {
         "step": 1,
         "suffix": "sqm",
         "group": "Property",
+        "help": "Internal floor area of the home.",
+        "range": "Accepted range: 17–83 sqm",
     },
     "cost_per_sqm_ksh": {
         "label": "Cost per square metre",
@@ -46,6 +62,8 @@ FIELD_CONFIG = {
         "step": 500,
         "prefix": "KES",
         "group": "Property",
+        "help": "Average construction or purchase cost per square metre.",
+        "range": "Accepted range: KES 32,022–105,759",
     },
     "monthly_repayment_ksh": {
         "label": "Monthly repayment",
@@ -55,6 +73,8 @@ FIELD_CONFIG = {
         "step": 500,
         "prefix": "KES",
         "group": "Financing",
+        "help": "Expected monthly loan or mortgage repayment.",
+        "range": "Accepted range: KES 2,980–107,950",
     },
     "interest_rate_pct": {
         "label": "Interest rate",
@@ -64,6 +84,8 @@ FIELD_CONFIG = {
         "step": 0.1,
         "suffix": "%",
         "group": "Financing",
+        "help": "Annual interest rate for the housing finance facility.",
+        "range": "Accepted range: 3–9%",
     },
     "housing_levy_contribution_ksh": {
         "label": "Housing levy contribution",
@@ -73,6 +95,8 @@ FIELD_CONFIG = {
         "step": 50,
         "prefix": "KES",
         "group": "Buyer Profile",
+        "help": "Buyer's expected monthly housing levy contribution.",
+        "range": "Accepted range: KES 150–7,440",
     },
     "buyer_monthly_income_ksh": {
         "label": "Buyer monthly income",
@@ -82,6 +106,8 @@ FIELD_CONFIG = {
         "step": 1000,
         "prefix": "KES",
         "group": "Buyer Profile",
+        "help": "Buyer's gross monthly income before deductions.",
+        "range": "Accepted range: KES 10,000–496,000",
     },
 }
 
@@ -110,10 +136,12 @@ class PricePredictionForm(forms.Form):
                 label=config.get("label", name.replace("_", " ").title()),
                 min_value=min_value,
                 max_value=max_value,
+                initial=config.get("initial"),
+                help_text=config.get("help", ""),
                 widget=forms.NumberInput(attrs=attrs),
             )
 
-    def grouped_fields(self):
+    def grouped_sections(self):
         groups = {}
         for name in self.feature_names:
             config = FIELD_CONFIG.get(name, {})
@@ -123,9 +151,27 @@ class PricePredictionForm(forms.Form):
                     "field": self[name],
                     "prefix": config.get("prefix", ""),
                     "suffix": config.get("suffix", ""),
+                    "range": config.get("range", ""),
                 }
             )
-        return groups.items()
+
+        group_names = list(GROUP_CONFIG)
+        group_names += [name for name in groups if name not in GROUP_CONFIG]
+        return [
+            {
+                "name": name,
+                "description": GROUP_CONFIG.get(name, "Provide the values used by the model."),
+                "controls": groups[name],
+            }
+            for name in group_names
+            if name in groups
+        ]
+
+    def grouped_fields(self):
+        return [
+            (section["name"], section["controls"])
+            for section in self.grouped_sections()
+        ]
 
     def feature_values(self):
         return {name: self.cleaned_data[name] for name in self.feature_names}
