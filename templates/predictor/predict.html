@@ -4,64 +4,133 @@
 {% block body_class %}predict-page{% endblock %}
 
 {% block content %}
-<main class="page-shell">
-    <section class="page-intro">
-        <div>
-            <p class="eyebrow">Prediction Workspace</p>
-            <h1>Estimate House Price</h1>
-        </div>
-        <div class="model-pill">
-            <span>{{ feature_count }}</span>
-            <small>model inputs</small>
-        </div>
-    </section>
+<main class="prediction-main">
+    <div class="prediction-shell">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="{% url 'predictor:landing' %}">Home</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Price estimator</span>
+        </nav>
 
-    <section class="workspace">
+        <header class="prediction-intro">
+            <div class="prediction-intro-copy">
+                <p class="section-kicker">Housing price estimator</p>
+                <h1>Estimate a property price</h1>
+                <p>
+                    Enter the property, project, and financing information below.
+                    All monetary values should be provided in Kenyan shillings.
+                </p>
+            </div>
+
+            <dl class="model-facts" aria-label="Estimator details">
+                <div>
+                    <dt>Required inputs</dt>
+                    <dd>{{ feature_count }}</dd>
+                </div>
+                <div>
+                    <dt>Currency</dt>
+                    <dd>KES</dd>
+                </div>
+                <div>
+                    <dt>Method</dt>
+                    <dd>Regression</dd>
+                </div>
+            </dl>
+        </header>
+
+        <div class="estimator-layout">
         <form class="estimator-form" method="post" novalidate>
             {% csrf_token %}
 
-            {% if form.non_field_errors %}
-                <div class="error-banner">{{ form.non_field_errors }}</div>
+            <header class="form-header">
+                <div>
+                    <h2>Property and finance details</h2>
+                    <p>Review the suggested values and replace them with the details for your scenario.</p>
+                </div>
+                <p class="required-note"><span aria-hidden="true">*</span> All fields required</p>
+            </header>
+
+            {% if form.errors %}
+                <div class="form-alert" role="alert">
+                    <strong>Some values need your attention.</strong>
+                    <p>Check the highlighted fields and confirm that each value is within its accepted range.</p>
+                    {{ form.non_field_errors }}
+                </div>
             {% endif %}
 
-            {% for group_name, controls in form.grouped_fields %}
-                <fieldset class="input-group">
-                    <legend>{{ group_name }}</legend>
-                    <div class="control-grid">
-                        {% for control in controls %}
-                            <label class="control-card" for="{{ control.field.id_for_label }}">
-                                <span class="control-label">{{ control.field.label }}</span>
-                                <span class="input-wrap">
+            {% for section in form.grouped_sections %}
+                <fieldset class="form-section">
+                    <legend>
+                        <span class="section-title">{{ section.name }}</span>
+                        <span class="section-description">{{ section.description }}</span>
+                    </legend>
+                    <div class="field-grid">
+                        {% for control in section.controls %}
+                            <div class="form-field{% if control.field.errors %} has-error{% endif %}">
+                                <label for="{{ control.field.id_for_label }}">
+                                    {{ control.field.label }} <span aria-hidden="true">*</span>
+                                </label>
+                                <div class="field-control">
                                     {% if control.prefix %}<span>{{ control.prefix }}</span>{% endif %}
                                     {{ control.field }}
                                     {% if control.suffix %}<span>{{ control.suffix }}</span>{% endif %}
-                                </span>
+                                </div>
+                                <div class="field-support" id="{{ control.field.id_for_label }}_helptext">
+                                    <span>{{ control.field.help_text }}</span>
+                                    {% if control.range %}<span>{{ control.range }}</span>{% endif %}
+                                </div>
                                 {% for error in control.field.errors %}
-                                    <span class="field-error">{{ error }}</span>
+                                    <p class="field-error">{{ error }}</p>
                                 {% endfor %}
-                            </label>
+                            </div>
                         {% endfor %}
                     </div>
                 </fieldset>
             {% endfor %}
 
-            <button class="submit-button" type="submit">
-                Estimate Price
-            </button>
+            <footer class="form-actions">
+                <button class="submit-button" type="submit">Calculate estimate</button>
+                <p>The calculation uses the values shown above and does not save personal information.</p>
+            </footer>
         </form>
 
-        <aside class="result-panel">
-            <p class="panel-label">Estimated House Price</p>
-            {% if result %}
-                <strong>{{ result.formatted }}</strong>
-                <div class="result-line"></div>
-                <p class="result-note">Generated from the existing linear regression model.</p>
-            {% else %}
-                <strong class="muted">KES --</strong>
-                <div class="result-line"></div>
-                <p class="result-note">Enter the housing values and submit the form.</p>
-            {% endif %}
-        </aside>
-    </section>
+            <aside class="estimate-column" aria-label="Estimate summary">
+                <section class="result-panel{% if result %} has-result{% endif %}" aria-live="polite">
+                    <p class="result-label">Estimated property price</p>
+                    {% if result %}
+                        <p class="result-value">{{ result.formatted }}</p>
+                        <p class="result-status">Calculated from the values currently entered.</p>
+                    {% else %}
+                        <p class="result-value is-empty">KES —</p>
+                        <p class="result-status">Complete the form to calculate an estimate.</p>
+                    {% endif %}
+
+                    <div class="result-explainer">
+                        <h2>About this estimate</h2>
+                        <p>
+                            This is an indicative model output, not a formal property valuation,
+                            lending decision, or offer to finance.
+                        </p>
+                    </div>
+
+                    <dl class="result-details">
+                        <div>
+                            <dt>Model</dt>
+                            <dd>Linear regression</dd>
+                        </div>
+                        <div>
+                            <dt>Output</dt>
+                            <dd>Kenyan shillings</dd>
+                        </div>
+                    </dl>
+                </section>
+
+                <section class="input-advice">
+                    <h2>For a useful result</h2>
+                    <p>Use current figures from project budgets, lender terms, and buyer records where available.</p>
+                </section>
+            </aside>
+        </div>
+    </div>
 </main>
 {% endblock %}
